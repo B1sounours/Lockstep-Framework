@@ -3,20 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine.Networking;
-using DarkRift;
 
 namespace Lockstep
 {
 	public static class NetworkManager
 	{
 		public static bool Offline = true;
-		private static FastList<Command> BufferedCommands = new FastList<Command> ();
-		private static FastList<byte> BufferedBytes = new FastList<byte> ();
+		private static FastList<Command> OutCommands = new FastList<Command> ();
 		private static FastList<byte> ReceivedBytes = new FastList<byte> ();
 		
 		public static void Initialize ()
 		{
-			DarkRiftAPI.onDataDetailed += HandleonDataDetailed;
 		}
 
 		static void HandleonDataDetailed (ushort sender, byte tag, ushort subject, object data)
@@ -26,39 +23,37 @@ namespace Lockstep
 
 		public static void Simulate ()
 		{
-			if (Offline)
-			{
-				Frame frame = FrameManager.Frames[LockstepManager.FrameCount];
-
-				frame.AddCommands (BufferedCommands.innerArray, 0, BufferedCommands.Count);
-			}
-			else
-			{
-				DarkRift.DarkRiftAPI.Recieve ();
-				BufferedBytes.FastClear ();
-				BufferedBytes.AddRange (BitConverter.GetBytes (LockstepManager.FrameCount));
-				for (i = 0; i < BufferedCommands.Count; i++)
-				{
-					BufferedBytes.AddRange (BufferedCommands[i].Serialized);
+			if (Offline) {
+				ReceivedBytes.AddRange (BitConverter.GetBytes (LockstepManager.FrameCount));
+				for (i = 0; i < OutCommands.Count; i++) {
+					ReceivedBytes.AddRange (OutCommands [i].Serialized);
 				}
-				DarkRiftAPI.SendMessageToServer (0,0,BufferedBytes.innerArray);
+			} else {
 
-				Frame frame = FrameManager.Frames[LockstepManager.FrameCount];
-				while (Index < ReceivedBytes.Count)
-				{
-					frame.AddCommand (new Command ());
-					Index += frame.Commands[frame.Commands.Count - 1].Reconstruct (ReceivedBytes.innerArray, Index);
-				}
-				ReceivedBytes.FastClear ();
 			}
 
+			int frameCount = BitConverter.ToInt32 (ReceivedBytes.innerArray, 0);
+			Index = 4;
 
-			BufferedCommands.FastClear ();
+			Frame frame;
+			if (!FrameManager.HasFrame[frameCount]) {
+				frame = new Frame ();
+				FrameManager.AddFrame (frameCount, frame);
+
+				while (Index < ReceivedBytes.Count) {
+					Command com = new Command ();
+					Index += com.Reconstruct (ReceivedBytes.innerArray, Index);
+					frame.AddCommand (com);
+				}
+			}
+
+			ReceivedBytes.FastClear ();
+			OutCommands.FastClear ();
 		}
 
 		public static void SendCommand (Command com)
 		{
-			BufferedCommands.Add (com);
+			OutCommands.Add (com);
 		}
 
 		static int i, j, Index;

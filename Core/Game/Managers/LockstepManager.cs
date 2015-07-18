@@ -6,7 +6,7 @@ namespace Lockstep
 {
 	public class LockstepManager : MonoBehaviour
 	{
-		private static LockstepManager Instance;
+		public static LockstepManager Instance;
 		public const long Timestep = FixedMath.One / 32;
 		public const int NetworkingIterationSpread = 2;
 		public static int FrameCount;
@@ -18,35 +18,43 @@ namespace Lockstep
 			FrameCount = 0;
 			NetworkManager.Initialize ();
 			FrameManager.Initialize ();
-			AgentController.Initialize (Instance.AllAgentCodes, Instance.AgentObjects);
+			AgentController.Initialize (Instance.AgentObjects);
 			PhysicsManager.Initialize ();
+			InputManager.Initialize ();
+			PlayerManager.Initialize ();
 		}
 
 		public static void Simulate ()
 		{
-			FrameManager.EarlySimulate ();
+			//FrameManager.EarlySimulate ();
+			PlayerManager.Simulate ();
 			NetworkManager.Simulate ();
+			if (!FrameManager.CanAdvanceFrame) return;
 			FrameManager.Simulate ();
 			AgentController.Simulate ();
 
+			//Custom code goes here
 
 			PhysicsManager.Simulate ();
 			CoroutineManager.Simulate ();
-			InputManager.FrameReset ();
+			InputManager.Simulate ();
+			SelectionManager.Simulate ();
 			FrameCount++;
 		}
 
 		public static void Visualize ()
 		{
 			PhysicsManager.Visualize ();
-
+			InputManager.Visualize ();
+			PlayerManager.Visualize ();
+			AgentController.Visualize ();
 		}
 
 
 		#region Instance Settings
 
 		public GameObject[] AgentObjects;
-		public AgentCode[] AllAgentCodes;
+		public GameObject SelectionRing;
 
 		void Awake ()
 		{

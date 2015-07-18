@@ -11,21 +11,23 @@ namespace Lockstep
 		static int i,j;
 		static ushort localID, globalID;
 		static LSAgent curAgent;
-		public static Dictionary<AgentCode,GameObject> AgentObjects;
-		public static Dictionary<AgentCode,FastStack<LSAgent>> CachedAgents;
+		public static AgentCode[] AgentCodes;
+		public static GameObject[] AgentObjects;
+		public static FastStack<LSAgent>[] CachedAgents;
 
 		private static bool FirstInitializeStatic = true;
-		public static void Initialize (AgentCode[] agentTypes, GameObject[] gameObjects)
+		public static void Initialize (GameObject[] agentObjects)
 		{
 			if (FirstInitializeStatic)
 			{
-				CachedAgents = new Dictionary<AgentCode, FastStack<LSAgent>>(agentTypes.Length);
-				AgentObjects = new Dictionary<AgentCode, GameObject> (agentTypes.Length);
-				for (i = 0; i < agentTypes.Length; i++)
+				AgentCodes = (AgentCode[])System.Enum.GetValues (typeof(AgentCode));
+				CachedAgents = new FastStack<LSAgent>[AgentCodes.Length];
+				AgentObjects = new GameObject[AgentCodes.Length];
+				for (i = 0; i < AgentCodes.Length; i++)
 				{
-					if (gameObjects[i] != null)
+					if (AgentCodes[i] != null)
 					{
-						AgentObjects.Add (agentTypes[i],gameObjects[i]);
+						AgentObjects[(int)AgentCodes[i]] = agentObjects[i];
 					}
 				}
 				FirstInitializeStatic = false;
@@ -34,6 +36,7 @@ namespace Lockstep
 			PeakGlobalID = 0;
 			GlobalActiveAgents = new Dictionary<ushort, LSAgent> (1024);
 			InstanceManagers.Clear ();
+
 		}
 		public static Dictionary<ushort,LSAgent> GlobalActiveAgents;
 		private static FastStack<ushort> OpenGlobalIDs = new FastStack<ushort> ();
@@ -55,51 +58,86 @@ namespace Lockstep
 				InstanceManagers[i].SimulateLocal ();
 			}
 		}
+		public static void Visualize ()
+		{
+			for (i = 0; i < InstanceManagers.Count; i++)
+			{
+				InstanceManagers[i].VisualizeLocal ();
+			}
+		}
+		public static AgentController Create ()
+		{
+			AgentController controller = new AgentController();
+			controller.InitializeLocal ();
+			return controller;
+		}
 		#endregion
 
 
 		#region Instance
-		public const int MaxAgents = 256;
-		public Dictionary<ushort,LSAgent> ActiveAgents;
+		public const int MaxAgents = 512;
+		public LSAgent[] Agents = new LSAgent[MaxAgents];
+		public bool[] AgentActive = new bool[MaxAgents];
 		public byte ControllerID;
 
 		public void InitializeLocal ()
 		{
-			ActiveAgents = new Dictionary<ushort, LSAgent> (256);
 			OpenLocalIDs.FastClear ();
 			PeakLocalID = 0;
+			ControllerID = (byte)InstanceManagers.Count;
 			InstanceManagers.Add (this);
 		}
 
 		public void SimulateLocal ()
 		{
-			foreach (LSAgent agent in ActiveAgents.Values)
+			for (i = 0; i < MaxAgents; i++)
 			{
-				agent.Simulate ();
+				if (AgentActive[i])
+					Agents[i].Simulate ();
+			}
+		}
+		public void VisualizeLocal ()
+		{
+			for (i = 0; i < MaxAgents;i++)
+			{
+				if (AgentActive[i])
+					Agents[i].Visualize();
 			}
 		}
 
-		public LSAgent CreateAgent (AgentCode agentType)
+		public void Execute (Command com)
 		{
-			FastStack<LSAgent> cache;
+			Selection selection = com.Select;
+			for (i = 0; i < selection.selectedAgentLocalIDs.Count; i++)
+			{
+				Agents[selection.selectedAgentLocalIDs[i]].Execute (com);
+			}
+		}
 
-			CachedAgents.TryGetValue (agentType, out cache);
+		public LSAgent CreateAgent (AgentCode agentCode)
+		{
+			FastStack<LSAgent> cache = CachedAgents[(int)agentCode];
 			if (cache != null && cache.Count > 0)
 			{
 				curAgent = cache.Pop ();
 			}
 			else {
-				curAgent = Instantiate (AgentObjects[agentType]).GetComponent<LSAgent> ();
+				curAgent = Instantiate (AgentObjects[(int)agentCode]).GetComponent<LSAgent> ();
 			}
 
 			localID = GenerateLocalID ();
 			curAgent.LocalID = localID;
-			ActiveAgents.Add (localID, curAgent);
+			Agents[localID] = curAgent;
+			AgentActive[localID] = true;
 
 			globalID = GenerateGlobalID ();
 			curAgent.GlobalID = globalID;
 
 			curAgent.Initialize ();
+
+			RingController ringController = Instantiate (LockstepManager.Instance.SelectionRing).GetComponent<RingController> ();
+			ringController.Initialize (curAgent);
+			curAgent.ringController = ringController;
 
 			return curAgent;
 		}
@@ -107,8 +145,9 @@ namespace Lockstep
 		public void DestroyAgent (LSAgent agent)
 		{
 			agent.Deactivate ();
-			CachedAgents[agent.MyAgentCode].Add (agent);
+			CachedAgents[(int)agent.MyAgentCode].Add (agent);
 			OpenLocalIDs.Add (agent.LocalID);
+			AgentActive[agent.LocalID] = false;
 		}
 
 		private FastStack<ushort> OpenLocalIDs = new FastStack<ushort> ();
