@@ -86,6 +86,20 @@ namespace Lockstep
 			this.x = (this.x << FixedMath.SHIFT_AMOUNT) / mag;
 			this.y = (this.y << FixedMath.SHIFT_AMOUNT) /  mag;
 		}
+		public void Normalize (out long mag)
+		{
+			mag = this.Magnitude ();
+			if (mag == 0)
+			{
+				return;
+			}
+			else if (mag == FixedMath.One)
+			{
+				return;
+			}
+			this.x = (this.x << FixedMath.SHIFT_AMOUNT) / mag;
+			this.y = (this.y << FixedMath.SHIFT_AMOUNT) / mag;
+		}
 		/// <summary>
 		/// Lerp this vector to target by amount.
 		/// </summary>
@@ -144,6 +158,15 @@ namespace Lockstep
 			temp2 = this.y - otherY;
 			temp2 *= temp2;
 			return (FixedMath.Sqrt ((temp1 + temp2) >> FixedMath.SHIFT_AMOUNT));
+		}
+		public long SqrDistance (long otherX, long otherY)
+		{
+
+			temp1 = this.x - otherX;
+			temp1 *= temp1;
+			temp2 = this.y - otherY;
+			temp2 *= temp2;
+			return ((temp1 + temp2) >> FixedMath.SHIFT_AMOUNT);
 		}
 	#endregion
 
@@ -221,6 +244,11 @@ namespace Lockstep
 		}
 
 		#endregion
+
+		public long GetLongHashCode ()
+		{
+			return x * 31 + y * 7;
+		}
 	}
 
 
