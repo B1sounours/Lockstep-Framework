@@ -11,6 +11,6 @@ Developed as part of our efforts toward the upcoming title Order of Ancients ([s
 Connect with us:
 [Facebook](https://www.facebook.com/inkhorngames) | [Twitter](https://twitter.com/inkhorngames) | [Youtube](http://youtube.com/inkhorncompany)
 
-**Quick Setup**
-______________________
+Quick Setup
+---------------------------
 The Lockstep Framework (LSF) is for
