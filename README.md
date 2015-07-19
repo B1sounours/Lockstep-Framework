@@ -17,7 +17,7 @@ Download the entire Lockstep Framework project and import it into your Unity ass
 
 Locate the Manager prefab in Core/Example/ and add that into your scene. This prefab comes with 3 components attached: LockstepManager, TestManager, and PlayerManager. LockstepManager contains settings for simulation and non-simulation related things that many other pieces of the LSF use.
 
-TestManager is an example of the script you would write to interact with the LSF. It creates an AgentController, creates 256 agents under that AgentController, and adds the AgentController to PlayerController for the player to interact with. In FixedUpdate and Update, LockstepManager.Simulate () and LockstepManager.Visualize () are called, respectively. These distribute necessary information to the LSF for when to execute frames.
+TestManager is an example of the script you would write to interact with the LSF. It creates an AgentController, creates 256 agents under that AgentController, and adds the AgentController to PlayerManager for the player to interact with that controller. In FixedUpdate and Update, LockstepManager.Simulate () and LockstepManager.Visualize () are called, respectively. These distribute necessary information to the LSF for when to execute frames.
 
 Click play and enjoy the lockstep simulation of group behaviors and collision responses.
 
