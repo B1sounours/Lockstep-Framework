@@ -7,8 +7,7 @@ namespace Lockstep {
 		public T[] innerArray;
 		public int Count = 0;
 		public int Capacity;
-		public int HashCode = -1;
-		
+
 		public FastStack (int StartCapacity)
 		{
 			Capacity = StartCapacity;
@@ -88,13 +87,7 @@ namespace Lockstep {
 			return output + innerArray [Count - 1];
 		}
 
-		public override int GetHashCode ()
-		{
-			if (HashCode != -1)
-				return HashCode;
-			else 
-				return innerArray.GetHashCode ();
-		}
+
 		
 	}
 }

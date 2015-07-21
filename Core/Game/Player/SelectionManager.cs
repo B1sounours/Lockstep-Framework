@@ -89,7 +89,7 @@ namespace Lockstep
 					for (j = 0; j < AgentController.MaxAgents; j++) {
 						if (agentController.AgentActive [j]) {
 							curAgent = agentController.Agents [j];
-							if (curAgent.renderer.isVisible) {
+							if (curAgent.GetComponent<Renderer>().isVisible) {
 								if (MousedAgent == null) {
 									dif = new Vector2 (
 									curAgent.transform.position.x - MouseWorldPosition.x,
@@ -297,7 +297,7 @@ namespace Lockstep
 					if (agentController.AgentActive[j])
 					{
 						curAgent = agentController.Agents[j];
-						if (curAgent.renderer.isVisible) {
+						if (curAgent.GetComponent<Renderer>().isVisible) {
 							dif = new Vector2 (
 								curAgent.transform.position.x - MouseWorldPosition.x,
 							    curAgent.transform.position.z - MouseWorldPosition.y);

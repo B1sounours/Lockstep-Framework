@@ -95,13 +95,9 @@ namespace Lockstep
 						dist = FixedMath.Sqrt ((DistX * DistX + DistY * DistY) >> FixedMath.SHIFT_AMOUNT);
 						
 						if (dist == 0) {
-
-							Body1.Position.x += Utility.GetRandom (1 << (FixedMath.SHIFT_AMOUNT - 2)) + 1;
-							Body1.Position.y -= Utility.GetRandom (1 << (FixedMath.SHIFT_AMOUNT - 2)) + 1;
-
+							Body1.Position.x += (LSUtility.GetRandom (1 << (FixedMath.SHIFT_AMOUNT - 2)) + 1);
+							Body1.Position.y -= (LSUtility.GetRandom (1 << (FixedMath.SHIFT_AMOUNT - 2)) + 1);
 							Body1.PositionChanged = true;
-
-
 							return;
 						}
 						
@@ -109,7 +105,6 @@ namespace Lockstep
 
 						if (depth < 0)
 							return;
-
 
 						DistX = (DistX * depth / dist);
 						DistY = (DistY * depth / dist);
@@ -132,7 +127,6 @@ namespace Lockstep
 						else  {
 							DistX /= 4;
 							DistY /= 4;
-
 							if (Body1.Velocity.Dot (Body2.Velocity.x, Body2.Velocity.y) < 0)
 							{
 								if (Body1.Mover != null)
@@ -166,9 +160,6 @@ namespace Lockstep
 								Body2.Position.y -= DistY;
 								Body2.PositionChanged = true;
 							}
-
-
-
 						}
 						break;
 					case CollisionType.Circle_AABox:

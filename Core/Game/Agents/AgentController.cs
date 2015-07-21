@@ -32,9 +32,10 @@ namespace Lockstep
 				}
 				FirstInitializeStatic = false;
 			}
+			GlobalActiveAgents = new Dictionary<ushort, LSAgent> (1024);
+
 			OpenGlobalIDs.FastClear ();
 			PeakGlobalID = 0;
-			GlobalActiveAgents = new Dictionary<ushort, LSAgent> (1024);
 			InstanceManagers.Clear ();
 
 		}

@@ -30,17 +30,17 @@ namespace Lockstep.Integration
 				leTarget = (LSBody)target;
 			}
 
-			if (leTarget.transform == null)
-				leTarget.transform = leTarget.GetComponent<Transform>();
-			if (leTarget.gameObject == null)
-				leTarget.gameObject = leTarget.GetComponent<GameObject>();
+			if (leTarget.cachedTransform == null)
+				leTarget.cachedTransform = leTarget.GetComponent<Transform>();
+			if (leTarget.cachedGameObject == null)
+				leTarget.cachedGameObject = leTarget.GetComponent<GameObject>();
 			
 
-			Vector3 transformPos = leTarget.transform.position;
+			Vector3 transformPos = leTarget.cachedTransform.position;
 			leTarget.Position.x = FixedMath.Create (transformPos.x);
 			leTarget.Position.y = FixedMath.Create (transformPos.z);
 
-			Vector3 transformRot = leTarget.transform.eulerAngles;
+			Vector3 transformRot = leTarget.cachedTransform.eulerAngles;
 			leTarget.Rotation = Vector2d.up;
 			leTarget.Rotation.Rotate (FixedMath.Create (Mathf.Sin (transformRot.y * Mathf.Deg2Rad)), FixedMath.Create (Mathf.Cos (transformRot.y * Mathf.Deg2Rad)));
 			//leTarget.Interpolate = EditorGUILayout.Toggle ("Interpolate", leTarget.Interpolate);
@@ -142,7 +142,7 @@ namespace Lockstep.Integration
 
 			if (leTarget == null)
 				leTarget = (LSBody)(target);
-			Vector3 TargetPosition = leTarget.transform.position;
+			Vector3 TargetPosition = leTarget.cachedTransform.position;
 			TargetPosition.y += .55f;
 			Vector3[] PolyLine;
 			switch (leTarget.Shape) {

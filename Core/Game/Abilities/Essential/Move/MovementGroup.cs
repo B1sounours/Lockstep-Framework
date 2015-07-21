@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Lockstep;
+using System;
 
 public class MovementGroup
 {
@@ -12,6 +13,14 @@ public class MovementGroup
 	private static FastStack<int> ActiveGroupOpenSlots = new FastStack<int>(ActiveGroupCapacity);
 	public static FastStack<MovementGroup> InactiveGroups = new FastStack<MovementGroup> ();
 	public static MovementGroup LastCreatedGroup;
+
+	public static void Initialize ()
+	{
+		Array.Clear (ActiveGroups,0,ActiveGroups.Length);
+		ActiveGroupPeakCount = 0;
+		ActiveGroupOpenSlots.FastClear ();
+		InactiveGroups.FastClear ();
+	}
 
 	public static void Simulate ()
 	{
@@ -118,11 +127,12 @@ public class MovementGroup
 				currentSqrDistance = Movers [i].Body.Position.SqrDistance (GroupPosition.x, GroupPosition.y);
 				if (currentSqrDistance > biggestSqrDistance) {
 					currentDistance = FixedMath.Sqrt (currentSqrDistance);
+					/*
 					DistDif = currentDistance - Radius;
 					if (DistDif > MaximumDistDif * MoversCount / 128) {
 						ExecuteGroupIndividualMove ();
 						return;
-					}
+					}*/
 					biggestSqrDistance = currentSqrDistance;
 					Radius = currentDistance;
 				}

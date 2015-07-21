@@ -9,7 +9,7 @@ namespace Lockstep
 	{
 		static int i;
 
-		const int StartCapacity = 30000;
+		const int StartCapacity = 10;
 		public static bool[] HasFrame = new bool[StartCapacity];
 		public static Frame[] Frames = new Frame[StartCapacity];
 		public static int Capacity = StartCapacity;
@@ -23,6 +23,8 @@ namespace Lockstep
 		{
 			ForeSight = 0;
 			NextFrame = 0;
+			Array.Clear (HasFrame,0,Capacity);
+			Array.Clear (Frames,0,Capacity);
 		}
 
 		public static void Simulate ()
@@ -30,40 +32,43 @@ namespace Lockstep
 			ForeSight--;
 			Frame frame = Frames[LockstepManager.FrameCount];
 			if (frame.Commands != null)
+			{
 			for (i = 0; i < frame.Commands.Count; i++)
 			{
 				Command com = frame.Commands[i];
 				AgentController controller = AgentController.InstanceManagers[com.ControllerID];
 				controller.Execute (com);
 			}
+			}
 		}
 
-		public static void CheckForesight ()
-		{
-
-		}
-		
 		public static void AddFrame (int index, Frame frame)
 		{
-			if (index >= Capacity)
-			{
-				Capacity *= 2;
-				Array.Resize (ref Frames,Capacity);
-				Array.Resize (ref HasFrame, Capacity);
-			}
 			Frames[index] = frame;
 			HasFrame[index] = true;
 
 			if (index == NextFrame) {
 				ForeSight++;
 				NextFrame++;
-				while (HasFrame[NextFrame])
+				while (NextFrame < Capacity && HasFrame[NextFrame])
 				{
 					NextFrame++;
 				}
 			}
 		}
+
+		public static void EnsureCapacity (int min)
+		{
+			if (Capacity < min)
+			{
+				Capacity *= 2;
+				if (Capacity < min) Capacity = min;
+				Array.Resize (ref Frames,Capacity);
+				Array.Resize (ref HasFrame, Capacity);
+			}
+		}
 	}
+
 	public class Frame {
 		public FastList<Command> Commands;
 

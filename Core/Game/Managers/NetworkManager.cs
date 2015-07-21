@@ -10,10 +10,12 @@ namespace Lockstep
 	{
 		public static bool Offline = true;
 		private static FastList<Command> OutCommands = new FastList<Command> ();
-		private static FastList<byte> ReceivedBytes = new FastList<byte> ();
+		public static FastList<byte> ReceivedBytes = new FastList<byte> ();
+		public static FastList<byte> AllReceivedBytes = new FastList<byte> (30000);
 		
 		public static void Initialize ()
 		{
+			AllReceivedBytes.FastClear ();
 		}
 
 		static void HandleonDataDetailed (ushort sender, byte tag, ushort subject, object data)
@@ -24,19 +26,25 @@ namespace Lockstep
 		public static void Simulate ()
 		{
 			if (Offline) {
-				ReceivedBytes.AddRange (BitConverter.GetBytes (LockstepManager.FrameCount));
-				for (i = 0; i < OutCommands.Count; i++) {
-					ReceivedBytes.AddRange (OutCommands [i].Serialized);
-				}
+					ReceivedBytes.AddRange (BitConverter.GetBytes (LockstepManager.FrameCount));
+					for (i = 0; i < OutCommands.Count; i++) {
+						ReceivedBytes.AddRange (OutCommands [i].Serialized);
+					}
+					AllReceivedBytes.AddRange (BitConverter.GetBytes (ReceivedBytes.Count));
+					AllReceivedBytes.AddRange (ReceivedBytes);
 			} else {
 
 			}
 
+
+
 			int frameCount = BitConverter.ToInt32 (ReceivedBytes.innerArray, 0);
 			Index = 4;
 
+			FrameManager.EnsureCapacity (frameCount + 1);
+
 			Frame frame;
-			if (!FrameManager.HasFrame[frameCount]) {
+			if (!FrameManager.HasFrame [frameCount]) {
 				frame = new Frame ();
 				FrameManager.AddFrame (frameCount, frame);
 
