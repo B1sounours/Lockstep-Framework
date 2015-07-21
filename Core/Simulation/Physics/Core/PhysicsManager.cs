@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Timers;
+using System;
 
 namespace Lockstep
 {
@@ -28,7 +29,7 @@ namespace Lockstep
 		#region Assignment Variables
 		public static bool[] SimObjectExists = new bool[MaxSimObjects];
 		public static int PeakCount = 0;
-		private static Stack<int> CachedIDs = new Stack<int> (MaxSimObjects / 8);
+		private static FastStack<int> CachedIDs = new FastStack<int> (MaxSimObjects / 8);
 		public static int AssimilatedCount = 0;
 		#endregion
 
@@ -39,16 +40,29 @@ namespace Lockstep
 		{
 			CollisionIterationCount = CollisionIterationSpread;
 			CollisionIterationMark = 0;
+			CollisionIterationRemain = 0;
+			PeakCount = 0;
+
+			CachedIDs.FastClear();
+			Array.Clear (SimObjects,0,SimObjects.Length);
+			Array.Clear (SimObjectExists,0,SimObjectExists.Length);
+			Array.Clear (CollisionPairs,0,CollisionPairs.Length);
+
+			CachedIDs.Clear ();
+			PeakCount = 0;
+			AssimilatedCount = 0;
+			
+			CollisionPairCount = 0;
+			FastCollisionPairs.FastClear ();
+
 			Partition.Initialize ();
 		}
 
-		static int fastColPairCount;
 		static int CurCount;
 		static CollisionPair pair;
 		static int i,j;
 		public static void Simulate ()
 		{
-
 			CollisionIterationRemain = (CollisionPairCount) / CollisionIterationSpread + 1;
 			if (CollisionIterationCount == CollisionIterationSpread) {
 				CollisionIterationCount = 0;
@@ -58,9 +72,8 @@ namespace Lockstep
 			}
 
 
-			fastColPairCount = FastCollisionPairs.Count;
 			CurCount = 0;
-			for (i = 0; i < fastColPairCount; i++)
+			for (i = 0; i < FastCollisionPairs.Count; i++)
 			{
 				pair = FastCollisionPairs[i];
 				CurCount ++;
@@ -140,7 +153,8 @@ namespace Lockstep
 
 			for (i = 0; i < id; i++) {
 				other = SimObjects [i];
-				if (!Physics2D.GetIgnoreLayerCollision (other.gameObject.layer, body.gameObject.layer)) {
+				if (!Physics2D.GetIgnoreLayerCollision (other.cachedGameObject.layer, body.cachedGameObject.layer)) {
+
 					colPairIndex = i * MaxSimObjects + id;
 
 					pair = CollisionPairs[colPairIndex];
@@ -148,8 +162,8 @@ namespace Lockstep
 					{
 						pair = new CollisionPair ();
 						CollisionPairs [colPairIndex] = pair;
-						FastCollisionPairs.Add (pair);
 					}
+					FastCollisionPairs.Add (pair);
 
 					pair.Initialize (other, body);
 					CollisionPairCount++;
@@ -157,7 +171,7 @@ namespace Lockstep
 			}
 			for (j = id + 1; j < PeakCount; j++) {
 				other = SimObjects [j];
-				if (!Physics2D.GetIgnoreLayerCollision (other.gameObject.layer, body.gameObject.layer)) {
+				if (!Physics2D.GetIgnoreLayerCollision (other.cachedGameObject.layer, body.cachedGameObject.layer)) {
 					colPairIndex = id * MaxSimObjects + j;
 
 					pair = CollisionPairs[colPairIndex];
@@ -165,8 +179,9 @@ namespace Lockstep
 					{
 						pair = new CollisionPair ();
 						CollisionPairs [colPairIndex] = pair;
-						FastCollisionPairs.Add (pair);
 					}
+					FastCollisionPairs.Add (pair);
+
 					
 					pair.Initialize (body, other);
 					CollisionPairCount++;
@@ -184,11 +199,9 @@ namespace Lockstep
 			}
 
 			SimObjectExists [body.ID] = false;
-			CachedIDs.Push (body.ID);
+			CachedIDs.Add (body.ID);
 
-			fastColPairCount = FastCollisionPairs.Count;
-
-			for (i = 0; i < fastColPairCount; i++)
+			for (i = 0; i < FastCollisionPairs.Count; i++)
 			{
 				pair = FastCollisionPairs.innerArray[i];
 				if (pair.Body1 == body || pair.Body2 == body)
@@ -210,17 +223,5 @@ namespace Lockstep
 			}
 		}
 
-		public static void End ()
-		{
-			for (i = 0; i < PeakCount; i++) {
-				SimObjectExists [i] = false;
-			}
-			CachedIDs.Clear ();
-			PeakCount = 0;
-			AssimilatedCount = 0;
-
-			CollisionPairCount = 0;
-			FastCollisionPairs = new FastList<CollisionPair> ();
-		}
 	}
 }

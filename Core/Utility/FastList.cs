@@ -47,6 +47,16 @@ namespace Lockstep
 
 		}
 
+		public void AddRange (FastList<T> items)
+		{
+			ArrayLength = items.Count;
+			EnsureCapacity (Count + ArrayLength + 1);
+			for (i = 0; i < ArrayLength; i++)
+			{
+				innerArray[Count++] = items[i];
+			}
+		}
+
 		public void AddRange (T[] items)
 		{
 			ArrayLength = items.Length;
@@ -143,6 +153,7 @@ namespace Lockstep
 			{
 				innerArray[i] = default(T);
 			}
+			Count = 0;
 		}
 		
 		/// <summary>

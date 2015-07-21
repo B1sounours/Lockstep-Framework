@@ -40,9 +40,9 @@ namespace Lockstep
 		public int
 			ID;
 		public Transform
-			transform;
+			cachedTransform;
 		public GameObject
-			gameObject;
+			cachedGameObject;
 		private bool FirstInitialize = false;
 		public delegate void CollisionFunction (LSBody other);
 
@@ -89,9 +89,10 @@ namespace Lockstep
 		{
 			if (!FirstInitialize) {
 				FirstInitialize = true;
-				this.gameObject = base.gameObject;
-				this.transform = base.transform;
+
 			}
+			cachedGameObject = base.gameObject;
+			cachedTransform = base.transform;
 
 			PositionChanged = true;
 			RotationChanged = true;
@@ -174,7 +175,6 @@ namespace Lockstep
 
 			}
 
-			
 		}
 
 		public void Visualize ()

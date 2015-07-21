@@ -86,13 +86,13 @@ public class Move : ActiveAbility
 
 	public override void Execute (Command com)
 	{
+
 		if (!com.Used) {
 			MovementGroup.CreateGroup (com);
 			com.Used = true;
 		}
 
 		MovementGroup.LastCreatedGroup.Add (this);
-
 	}
 
 	public void StopMove ()
