@@ -24,7 +24,6 @@ Click play and enjoy the lockstep simulation of group behaviors and collision re
 Ability Pattern
 ----------------
 Abilities are moddable behaviors that can be easily attached, detached, and moddified on prefab game objects. They follow the following pattern:
-- All abilities must inherit from the abstract Ability class.
 - The overridable Initialize() method is called when the agent the ability belongs to is created and initialized. It provides an argument of the agent the ability belongs to. Because LSF uses object pooling, the Ability must also be reset in Initialize().
 - Simulate() is called every single simulation frame.
 - Deactivate() is called when the ability's agent is deactivated (i.e. killed). Note that Simulate() will not be called until after Initialize() is called again.
@@ -32,7 +31,7 @@ Abilities are moddable behaviors that can be easily attached, detached, and modd
 ActiveAbility Pattern
 _____________________________
 ActiveAbility inherits from Ability and includes all the patterns described above. In addition ActiveAbilitys can be interacted with by players through Commands.
-- Execute () is called when a Command is received and activates the ability. This method provides an argument that is the Command responsible for activating the ability's activation.
+- Execute () is called when a Command is received and activates the ability. This method provides an argument that is the Command responsible for the ability's activation.
 - The ListenInput property is the input that the ability listens to. If a Command with the InputCode of ListenInput is received, Execute () is called on the ability.
  
 Essential Abilities
