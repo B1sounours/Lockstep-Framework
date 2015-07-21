@@ -1,6 +1,6 @@
 Lockstep Framework
 ------------------------
-The Lockstep Framework (LSF) is a framework designed for games that especially need lockstep simulations. It includes a deterministic 2D physics engine, pathfinding, behavior system, and more. LSF includes Unity integration but can be abstracted away.
+The Lockstep Framework (LSF) is a framework designed for games that especially need lockstep simulations. It includes a deterministic 2D physics engine, pathfinding, behavior system, and more. LSF is integrated with Unity but can be abstracted away.
 
 Note: Under development by [John Pan](https://github.com/SnpM).
 
@@ -21,7 +21,19 @@ TestManager is an example of the script you would write to interact with the LSF
 
 Click play and enjoy the lockstep simulation of group behaviors and collision responses.
 
-Essential Behaviors
+Ability Pattern
+----------------
+Abilities are moddable behaviors that can be easily attached, detached, and moddified on prefab game objects. They follow the following pattern:
+- All abilities must inherit from the abstract Ability class. If the ability is "active" in that it listens to input and behaves when input is called, make sure it inherits from the ActiveAbility class.
+- The overridable Initialize() method is called when the agent the ability belongs to is created and initialized. It provides an argument of the agent the ability belongs to. Because LSF uses object pooling, the Ability must also be reset in Initialize().
+- Simulate() is called every single simulation frame.
+- Deactivate() is called when the ability's agent is deactivated (i.e. killed). Note that Simulate() will not be called until after Initialize() is called again.
+Active Ability
+_______________
+- The Execute () method is called when a Command is received and activates the ability. This method provides an argument that is the command responsible for activating the ability.
+- The ListenInput property is the input that the ability listens to. If a Command with the InputCode of ListenInput is received, Execute () is called on the ability.
+ 
+Essential Abilities
 -------------------
 Currently, only movement with crowd behaviors is implemented. If you'd like to contribute, please explore Core/Game/Abities/Essential/ and help create more essential behaviors (i.e. Health, Energy, Attack, Stop).
 
