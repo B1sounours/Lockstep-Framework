@@ -16,20 +16,31 @@ namespace Lockstep
 
 			Time.fixedDeltaTime = FixedMath.ToFloat (Timestep);
 			FrameCount = 0;
+			LSUtility.Initialize (1);
+			CoroutineManager.Initialize ();
+
 			NetworkManager.Initialize ();
 			FrameManager.Initialize ();
 			AgentController.Initialize (Instance.AgentObjects);
 			PhysicsManager.Initialize ();
 			InputManager.Initialize ();
 			PlayerManager.Initialize ();
+
+			MovementGroup.Initialize ();
+
+			Initialized = true;
 		}
 
 		public static void Simulate ()
 		{
+			if (!Initialized) return;
 			//FrameManager.EarlySimulate ();
 			PlayerManager.Simulate ();
 			NetworkManager.Simulate ();
-			if (!FrameManager.CanAdvanceFrame) return;
+			if (!FrameManager.CanAdvanceFrame)
+			{
+				return;
+			}
 			FrameManager.Simulate ();
 			AgentController.Simulate ();
 
@@ -46,10 +57,18 @@ namespace Lockstep
 
 		public static void Visualize ()
 		{
+			if (!Initialized) return;
 			PhysicsManager.Visualize ();
 			InputManager.Visualize ();
 			PlayerManager.Visualize ();
 			AgentController.Visualize ();
+		}
+
+
+		public static bool Initialized = false;
+		public static void End ()
+		{
+			Initialized = false;
 		}
 
 

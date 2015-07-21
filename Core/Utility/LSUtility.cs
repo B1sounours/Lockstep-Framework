@@ -4,12 +4,20 @@ using System;
 
 namespace Lockstep
 {
-	public static class Utility
+	public static class LSUtility
 	{
 
 		const uint Y = 842502087, Z = 3579807591, W = 273326509;
 		public static uint Seed = 1;
-		private static uint y = Y, z = Z, w = W;
+		private static uint y = Y, z = Z, w;
+
+		public static void Initialize (uint seed)
+		{
+			Seed = seed;
+			y = Y;
+			z = Z;
+			w = W;
+		}
 
 		public static uint GetRandom (uint Count)
 		{

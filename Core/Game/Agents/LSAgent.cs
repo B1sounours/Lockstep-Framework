@@ -20,9 +20,9 @@ namespace Lockstep
 
 		public void Initialize ()
 		{
-			this.transform = GetComponent<Transform> ();
-			this.gameObject = GetComponent<GameObject> ();
-			this.renderer = GetComponent<Renderer> ();
+			cachedTransform = base.transform;
+			cachedGameObject = base.gameObject;
+			cachedRenderer = GetComponent<Renderer> ();
 
 			Abilities = this.GetComponents<Ability> ();
 
@@ -50,6 +50,7 @@ namespace Lockstep
 		}
 		public void Visualize ()
 		{
+			if (ringController != null)
 			ringController.Visualize ();
 		}
 
@@ -78,6 +79,7 @@ namespace Lockstep
 			set {
 				if (_isSelected != value) {
 					_isSelected = value;
+					if (ringController != null)
 					if (_isSelected) {
 						ringController.Select ();
 					} else {
@@ -100,6 +102,7 @@ namespace Lockstep
 			set {
 				if (IsHighlighted != value) {
 					_isHighlighted = value;
+					if (ringController != null)
 					if (!_isSelected) {
 						if (_isHighlighted) {
 							ringController.Highlight ();
@@ -115,9 +118,9 @@ namespace Lockstep
 		public int BoxedAgentsIndex;
 		public int SelectedAgentsIndex;
 		#endregion
-		public Transform transform;
-		public GameObject gameObject;
-		public Renderer renderer;
+		public Transform cachedTransform;
+		public GameObject cachedGameObject;
+		public Renderer cachedRenderer;
 		static int i, j;
 	}
 }
