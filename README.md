@@ -29,7 +29,7 @@ Abilities are moddable behaviors that can be easily attached, detached, and modd
 - Simulate() is called every single simulation frame.
 - Deactivate() is called when the ability's agent is deactivated (i.e. killed). Note that Simulate() will not be called until after Initialize() is called again.
 Active Ability
-_______________
+_____________________________
 - The Execute () method is called when a Command is received and activates the ability. This method provides an argument that is the command responsible for activating the ability.
 - The ListenInput property is the input that the ability listens to. If a Command with the InputCode of ListenInput is received, Execute () is called on the ability.
  
