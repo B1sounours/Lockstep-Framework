@@ -28,6 +28,7 @@ Abilities are moddable behaviors that can be easily attached, detached, and modd
 - The overridable Initialize() method is called when the agent the ability belongs to is created and initialized. It provides an argument of the agent the ability belongs to. Because LSF uses object pooling, the Ability must also be reset in Initialize().
 - Simulate() is called every single simulation frame.
 - Deactivate() is called when the ability's agent is deactivated (i.e. killed). Note that Simulate() will not be called until after Initialize() is called again.
+
 Active Ability
 _____________________________
 - The Execute () method is called when a Command is received and activates the ability. This method provides an argument that is the command responsible for activating the ability.
