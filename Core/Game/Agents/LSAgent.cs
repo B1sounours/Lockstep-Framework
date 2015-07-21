@@ -69,7 +69,17 @@ namespace Lockstep
 			PhysicsManager.Dessimilate (Body);
 		}
 
-
+		public T GetAbility<T> () where T : Ability
+		{
+			T ret;
+			for (i = 0; i < AbilityCount; i++)
+			{
+				ret = Abilities[i] as T;
+				if (ret != null)
+					return ret;
+			}
+			return null;
+		}
 		
 		#region Utility Variables
 		public bool IsSelected {
