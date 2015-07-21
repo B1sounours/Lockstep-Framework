@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -11,13 +12,18 @@ namespace Lockstep
 
 		static Coroutine[] Coroutines = new Coroutine[MaxCoroutines];
 
-		static int[] OpenSlots = new int[MaxCoroutines];
-		static int SlotCount;
-
+		static FastStack<int> OpenSlots = new FastStack<int>();
 		static int HighCount;
 
 		static int i,j, leIndex;
-		static Coroutine coroutine;
+		static Coroutine coroutine; 
+
+		public static void Initialize ()
+		{
+			Array.Clear (Coroutines,0,Coroutines.Length);
+			OpenSlots.FastClear ();
+			HighCount = 0;
+		}
 
 		public static void Simulate ()
 		{
@@ -33,9 +39,9 @@ namespace Lockstep
 
 		public static Coroutine StartCoroutine (IEnumerator<int> enumerator)
 		{
-			if (SlotCount > 0)
+			if (OpenSlots.Count > 0)
 			{
-				leIndex = OpenSlots[--SlotCount];
+				leIndex = OpenSlots.Pop();
 				coroutine = Coroutines[leIndex];
 				coroutine.Initialize (enumerator);
 				coroutine.Index = leIndex;
@@ -49,6 +55,7 @@ namespace Lockstep
 				Coroutines[HighCount] = coroutine;
 				coroutine.Index = HighCount++;
 			}
+
 			return coroutine;
 		}
 
@@ -56,7 +63,7 @@ namespace Lockstep
 		public static void StopCoroutine (Coroutine _coroutine)
 		{
 			leIndex = _coroutine.Index;
-			OpenSlots[SlotCount++] = leIndex;
+			OpenSlots.Add (	leIndex);
 			_coroutine.End ();
 
 			/*

@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using System;
 namespace Lockstep {
 public class PlayerManager  : MonoBehaviour{
@@ -10,11 +10,15 @@ public class PlayerManager  : MonoBehaviour{
 		private static bool FirstInitialize = true;
 		public static void Initialize ()
 		{
+
 			if (FirstInitialize)
 			{
-				mainCamera = Camera.main;
 				FirstInitialize = false;
 			}
+			mainCamera = Camera.main;
+			agentControllers.FastClear ();
+			Array.Clear (HasAgentController,0,HasAgentController.Length);
+
 		}
 
 		public static void Simulate ()
@@ -27,6 +31,7 @@ public class PlayerManager  : MonoBehaviour{
 			SelectionManager.Update ();
 			if (Input.GetMouseButtonDown(1))
 			{
+
 				Command com = new Command(agentControllers[0].ControllerID,InputCode.M);
 				Selection select = new Selection();
 				select.SerializeFromSelectionManager ();
@@ -45,6 +50,7 @@ public class PlayerManager  : MonoBehaviour{
 			}
 			HasAgentController[agentController.ControllerID] = true;
 		}
+
 
 
 
