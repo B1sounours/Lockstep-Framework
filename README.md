@@ -33,6 +33,10 @@ _____________________________
 ActiveAbility inherits from Ability and includes all the patterns described above. In addition ActiveAbilitys can be interacted with by players through Commands.
 - Execute () is called when a Command is received and activates the ability. This method provides an argument that is the Command responsible for the ability's activation.
 - The ListenInput property is the input that the ability listens to. If a Command with the InputCode of ListenInput is received, Execute () is called on the ability.
+
+Notes
+_____
+- Often abilities have to interact with each other. For this reason, the LSAgent.GetAbility<T>() method was created. Use this instead of GetComponent<T> because it's about 30 times faster.
  
 Essential Abilities
 -------------------
