@@ -21,6 +21,10 @@ TestManager is an example of the script you would write to interact with the LSF
 
 Click play and enjoy the lockstep simulation of group behaviors and collision responses.
 
+Agent Pattern
+--------------
+Agents are synonymous with units. They're made to be poolable for fast spawning and destroying, and are highly moddable using Unity's component system.
+
 Ability Pattern
 ----------------
 Abilities are moddable behaviors that can be easily attached, detached, and moddified on prefab game objects. They follow the following pattern:
