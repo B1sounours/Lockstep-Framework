@@ -23,7 +23,9 @@ Click play and enjoy the lockstep simulation of group behaviors and collision re
 
 Agent Pattern
 --------------
-Agents are synonymous with units. They're made to be poolable for fast spawning and destroying, and are highly moddable using Unity's component system.
+Agents are synonymous with units. They're made to be poolable for fast spawning and destroying, and are highly moddable using Unity's component system. Their creation and controll process abides by the following:
+- LSAgent is a component to attach to a prefab game object. LSAgents facilitate many things from agent selections to Ability simulation and initialization. LSAgents are designed to be poolable.
+- AgentControllers do the heavy-lifting for controlling LSAgents. They help with interaction with LSAgents' ActiveAbilitys as well as the creation of LSAgents. PlayerManager can add AgentControllers to allow units under the AgentController to be controllable by the player.
 
 Ability Pattern
 ----------------
@@ -40,7 +42,7 @@ ActiveAbility inherits from Ability and includes all the patterns described abov
 
 Notes
 _____
-- Often abilities have to interact with each other. For this reason, the LSAgent.GetAbility<T>() method was created. Use this instead of GetComponent<T> because it's about 30 times faster.
+- Often abilities have to interact with each other. For this reason, the LSAgent.GetAbility<T>() method was created. Use this instead of GetComponent<T>() because it's about 30 times faster.
  
 Essential Abilities
 -------------------
